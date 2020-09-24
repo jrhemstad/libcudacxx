@@ -1,6 +1,6 @@
 # Versioning
 
-The NVIDIA Standard Library is versioned along two axes:
+libcu++ is versioned along two axes:
 
 - API Version: A 3-component semantic version for the programmatic interface.
     - Follows [semantic versioning].
@@ -38,7 +38,7 @@ A library's API includes, but is not limited to:
 
 ### libcu++ API Versioning
 
-The NVIDIA Standard Library API uses [semantic versioning].
+The NVIDIA C++ Standard Library API uses [semantic versioning].
 The versioning scheme, `MMM.mmm.ppp`, consists of three components and four
   macros defined in `<cuda/std/version>`:
 
@@ -102,40 +102,48 @@ Parts of this section were based on
 
 ### libcu++ ABI Versioning
 
-The NVIDIA Standard Library ABI version scheme is a single 16 bit unsigned
+The NVIDIA C++ Standard Library ABI version scheme is a single 16 bit unsigned
   integer value.
 An ABI version represents stability in the ABI to the best of our ability
   (excellent, but not perfect).
 When any changes are made to the ABI, even seemingly minor ones, the ABI
   version is incremented.
 
+The NVIDIA C++ Standard Library does not maintain long-term ABI stability.
+Promising long-term ABI stability would prevent us from fixing mistakes and
+  providing best in class performance.
+So, we make no such promises.
+
+Whenever a new major [CUDA Compute Capability] is released, the ABI is broken.
+A new NVIDIA C++ Standard Library ABI version is introduced and becomes the
+  default and support for all older ABI versions is dropped.
+
 A snapshot of the codebase may support multiple ABI versions at the same time.
 They always use the latest available ABI version by default.
 The macro `_LIBCUDACXX_CUDA_ABI_VERSION_LATEST` from `<cuda/std/version>`
   defines the value of the latest ABI version.
+
 New ABI versions may be introduced at any point in time, which means that the
   default ABI version may change in any release.
 A subset of older ABI versions can be used instead by defining
   `_LIBCUDACXX_CUDA_ABI_VERSION` to the desired version.
-Whenever a new major [CUDA Compute Capability] is released, a new NVIDIA
-  Standard Library ABI version is introduced and support for all older ABI
-  versions is dropped.
+
 For more information on specific ABI versions, please see the [releases section]
   and [changelog].
 
 A program is ill-formed, no diagnostic required, if it uses two different
-  translation units compiled with a different NVIDIA Standard Library ABI
+  translation units compiled with a different NVIDIA C++ Standard Library ABI
   version.
 For example, all of the following is disallowed:
 
-* Compiling `foo.cu` with ABI version 1, `bar.cu` with ABI version 2, and
+- Compiling `foo.cu` with ABI version 1, `bar.cu` with ABI version 2, and
       linking `foo.cu` and `bar.cu` into one program.
-* Compiling `foo.cu` with ABI version 2 and linking it with a library,
+- Compiling `foo.cu` with ABI version 2 and linking it with a library,
       `libbar.so`, compiled with ABI version 1.
-* Compiling `foo.cu` with ABI version 1 and linking it with a library,
+- Compiling `foo.cu` with ABI version 1 and linking it with a library,
       `libbar.a`, compiled with ABI version 2.
 
-Every namespace used by the NVIDIA Standard Library has an
+Every namespace used by the NVIDIA C++ Standard Library has an
   [inline namespace] `__N` (where `N` is the ABI version); this is known as an
   ABI namespace.
 Nested namespaces have their own ABI namespace, e.g. `cuda::__N::` and
@@ -147,13 +155,15 @@ The ABI namespace will be rarely be encountered, because, in most
   enclosing namespace.
 So, `cuda::std::__N::barrier` is available as `cuda::std::barrier`.
 
-When including the NVIDIA Standard Library in a translation unit, a single
+When including the NVIDIA C++ Standard Library in a translation unit, a single
   ABI version and single ABI namespace will be defined.
 You cannot utilize two different ABI versions in a single translation unit by
    explicitly using ABI namespaces.
 
 ABI namespaces aid in diagnosing the use of translation units compiled with
   different ABI versions.
+We want to try and help anyone who is mixing code from different ABIs by loudly
+  breaking them at compile time instead of quietly failing them at runtime.
 Suppose we have one translation unit that uses ABI version 3 and defines a
   function `void negate(cuda::atomic<float>&)`.
 `cuda::atomic<float>` is just another name for `cuda::__3::atomic<float>`, so
@@ -169,7 +179,7 @@ However, we must be careful, because ABI namespaces cannot diagnosis all mixing
 Let's say we a translation unit compiled with ABI version 3 that contains this
   code:
 
-```
+```c++
 struct sum { cuda::atomic<float> };
 void negate(sum&);
 ```
@@ -192,12 +202,12 @@ However, this is generally not recommended because it has the significant
   downside that our code does not automatically migrate to newer ABI versions.
 
 We recommend that you always recompile your code and dependencies with the
-  latest NVIDIA SDKs and use the latest NVIDIA Standard Library ABI.
+  latest NVIDIA SDKs and use the latest NVIDIA C++ Standard Library ABI.
 [Live at head].
 
 ## `experimental` Namespaces
 
-Some NVIDIA Standard Library facilities live in a nested `experimental`
+Some NVIDIA C++ Standard Library facilities live in a nested `experimental`
   namespace.
 We make absolutely no guarantees about such features.
 Their API and ABI is subject to change or wholesale removeal at any time

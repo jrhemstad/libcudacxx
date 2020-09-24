@@ -1,24 +1,28 @@
-# libcu++: The NVIDIA C++ Standard Library
+# libcu++: The C++ Standard Library for Your Entire System
 
-libcu++ is the NVIDIA C++ Standard Library, bringing you familiar features from
-  the C++ Standard Library that you can seamlessly use in CUDA C++ in both host
-  and device code.
+<table><tr>
+<th><b><a href="https://github.com/nvidia/libcudacxx/tree/main/samples">Examples</a></b></th>
+<th><b><a href="https://nvidia.github.io/libcudacxx">Documentation</a></b></th>
+</tr></table>
+
+**libcu++, the NVIDIA C++ Standard Library,  is the C++ Standard Library for
+  your entire system.**
+It provides a heterogeneous implementation of the C++ Standard Library that can
+  be used in and between CPU and GPU code.
 
 If you know how to use your C++ Standard Library, then you know how to use
   libcu++.
-It's included in your NVIDIA HPC SDK or CUDA Toolkit installation.
-No additional installation or compiler flags are needed.
-
-All you have to do is add `cuda/` to the start of your includes and `cuda::`
-  before any uses of `std::`:
+All you have to do is add `cuda/std/` to the start of your Standard Library
+  includes and `cuda::` before any uses of `std::`:
 
 ```c++
 #include <cuda/std/atomic>
 cuda::std::atomic<int> x;
 ```
 
-**[Examples] are a great way to get familiar with libcu++; the [documentation]
-is also pretty helpful.**
+The NVIDIA C++ Standard Library is an open source project; it is available on
+  [GitHub] and included in the NVIDIA HPC SDK and CUDA Toolkit.
+No additional installation or compiler flags are needed.
 
 ## `cuda::` and `cuda::std::`
 
@@ -26,10 +30,12 @@ When used with NVCC, NVIDIA C++ Standard Library facilities live in their own
   header hierarchy and namespace with the same structure as, but distinct from,
   the host compiler's Standard Library:
 
-* `std::`/`<*>`: Your host compiler's Standard Library that works in
-      `__host__` code only.
-    When using NVCC, the NVIDIA Standard Library does not replace or
-      interfere with host compiler's Standard Library.
+* `std::`/`<*>`: When using NVCC, this is your host compiler's Standard Library
+      that works in `__host__` code only, although you can use the
+      `--expt-relaxed-constexpr` flag to use any `constexpr` functions in
+      `__device__` code.
+    With NVCC, libcu++ does not replace or interfere with host compiler's
+      Standard Library.
 * `cuda::std::`/`<cuda/std/*>`: Strictly conforming implementations of
       facilities from the Standard Library that work in `__host__ __device__`
       code.
@@ -54,12 +60,14 @@ cuda::std::atomic<int> x;
 cuda::atomic<int, cuda::thread_scope_block> x;
 ```
 
-## `cuda::` is Heterogeneous
+## libcu++ is Heterogeneous
 
-libcu++ facilities work across your entire codebase, in both host and device
-  code.
+The NVIDIA C++ Standard Library works across your entire codebase, both in and
+  across host and device code.
+libcu++ is a C++ Standard Library for your entire system, not just
 Everything in `cuda::` is `__host__ __device__`.
 
+libcu++ facilities are designed to be passed between host and device code.
 Unless otherwise noted, any libcu++ object which is copyable or movable can be
   copied or moved between host and device code.
 
@@ -75,26 +83,54 @@ A small number of libcu++ facilities only work in device code, usually because
 
 Such facilities live in `cuda::device::`.
 
-## `cuda::` is Incremental
+## libcu++ is Incremental
 
-libcu++ delivers a high-priority subset of the C++ Standard Library today, and
-  each release increases the feature set.
+Today, the NVIDIA C++ Standard Library delivers a high-priority subset of the
+  C++ Standard Library today, and each release increases the feature set.
 But it is a subset; not everything is available today.
 The [API section] lists the facilities available and the releases they were
   first introduced in.
 
-## libcu++ is Open Source
+## Licensing
 
-libcu++ is an open source project developed on GitHub.
+The NVIDIA C++ Standard Library is an open source project developed on [GitHub].
 It is NVIDIA's variant of [LLVM's libc++].
 libcu++ is distributed under the [Apache License v2.0 with LLVM Exceptions].
 
+## Conformance
 
-[API section]: ./api.md
-[synchronization library section]: ./api/synchronization_library.md
+The NVIDIA C++ Standard Library aims to be a conforming implementation of the
+  C++ Standard, [ISO/IEC IS 14882], Clause 16 through 32.
 
-[examples]: https://github.com/NVIDIA/libcudacxx/tree/main/samples
+## ABI Evolution
+
+The NVIDIA C++ Standard Library does not maintain long-term ABI stability.
+Promising long-term ABI stability would prevent us from fixing mistakes and
+  providing best in class performance.
+So, we make no such promises.
+
+Every major CUDA Toolkit release, the ABI will be broken.
+The life cycle of an ABI version is approximately one year.
+Long-term support for an ABI version ends after approximately two years.
+Please see the [versioning section] for more details.
+
+We recommend that you always recompile your code and dependencies with the
+  latest NVIDIA SDKs and use the latest NVIDIA C++ Standard Library ABI.
+[Live at head].
+
+
+[GitHub]: https://github.com/nvidia/libcudacxx
+
+[API section]: https://nvidia.github.io/libcudacxx/api.html
+[synchronization library section]: https://nvidia.github.io/libcudacxx/api/synchronization_library.html
+[versioning section]: https://nvidia.github.io/libcudacxx/releases/versioning.html
+
 [documentation]: https://nvidia.github.io/libcudacxx
 
 [LLVM's libc++]: https://libcxx.llvm.org
 [Apache License v2.0 with LLVM Exceptions]: https://llvm.org/LICENSE.txt
+
+[ISO/IEC IS 14882]: https://eel.is/c++draft
+
+[live at head]: https://www.youtube.com/watch?v=tISy7EJQPzI&t=1032s
+
