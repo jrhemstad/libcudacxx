@@ -141,7 +141,7 @@ public:
     void deallocate(void* p, size_t n, cuda::stream_view s){ return do_deallocate(p, n, default_alignment, s); }
     void deallocate(void* p, size_t n, size_t alignment, cuda::stream_view s){ return do_deallocate(p, n, alignment, s); }
  private:
-    virtual void* do_allocate(size_t n, size_t alignment, cuda::stream_view s) = 0;
+    virtual void* do_allocate(size_t nk, size_t alignment, cuda::stream_view s) = 0;
     virtual void do_deallocate(void* p, size_t n, size_t alignment, cuda::stream_view s) = 0;
 };
 ```
@@ -170,6 +170,11 @@ TBD
 ### `cuda::stream_ordered_allocator`
 
 TBD
+
+### Containers
+
+TBD. libcu++ will provide memory owning container types that work with `cuda::memory_resource/cuda::stream_ordered_memory`. 
+
 
 
 
