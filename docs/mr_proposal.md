@@ -2,22 +2,22 @@
 
 ## Motivation
 
-Performance sensitive applications that make frequent dynamic memory allocations often find that allocating memory to be a significant overhead. 
+Performance sensitive applications that make frequent dynamic memory allocations often find allocating memory to be a significant overhead. 
 CUDA developers are even more acutely aware of the costs of dynamic allocation due to the relatively higher cost of `cudaMalloc/cudaFree` compared to standard `malloc/free`.
 As a result, developers devise custom, high-performance memory allocators as optimized as the application the allocator serves. 
 However, what works well for one application will not always satisfy another, which leads to a proliferation of custom allocator implementations. 
 Interoperation among these applications is difficult without an interface to enable sharing a common allocator.
 
-In Standard C++, [`Allocator`s](https://en.cppreference.com/w/cpp/named_req/Allocator) have traditionally provided this common interface.
-C++17 introduced [`<memory_resource>`](https://en.cppreference.com/w/cpp/header/memory_resource) and the [`std::pmr::memory_resource`](https://en.cppreference.com/w/cpp/memory/memory_resource) abstract class that defines a minimal interface for (de)allocating raw bytes and sits below `Allocator`s. 
-This polymorphic interface provides the lingua franca for those who trade in custom memory allocators. 
+In Standard C++, [`Allocator`](https://en.cppreference.com/w/cpp/named_req/Allocator) has traditionally provided this common interface.
+C++17 introduced [`<memory_resource>`](https://en.cppreference.com/w/cpp/header/memory_resource) and the [`std::pmr::memory_resource`](https://en.cppreference.com/w/cpp/memory/memory_resource) abstract class that defines a minimal interface for (de)allocating raw bytes and sits below `Allocator`. 
+This polymorphic interface provides a standard way to define, expose and share custom memory allocation. 
 
 
 <!--- In addition, `<memory_resource>` provides a handful of standard `memory_resource` implementations akin to custom allocators that seek to perform better than standard allocation, e.g., [`unsynchronized_pool_resource`](https://en.cppreference.com/w/cpp/memory/unsynchronized_pool_resource). --->
 
 However, the `std::pmr::memory_resource` interface is insufficient to capture the unique features of the CUDA C++ programming model.
-For example, Standard C++ only recognizes a single, universally accessible memory space; whereas CUDA C++ applications trade in at least four different kinds of dynamically allocated memory.
-Furthermore, CUDA's "stream"-based asynchronous execution model was extended in CUDA 11.2 with the addition of [`cudaMallocAsync`](https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__MEMORY__POOLS.html)<sup>[1](#link-footnote)</sup> to include memory allocation as stream-ordered events.
+For example, Standard C++ only recognizes a single, universally accessible memory space; whereas CUDA C++ applications may access at least four different kinds of dynamically allocated memory.
+Furthermore, CUDA's "stream"-based asynchronous execution model was extended in CUDA 11.2 with the addition of [`cudaMallocAsync` and `cudaFreeAsync`](https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__MEMORY__POOLS.html)<sup>[1](#link-footnote)</sup>, which provide stream-ordered memory allocation and deallocation.
 Therefore, there is a need for a common allocator interface similar to `std::pmr::memory_resource` that accounts for the unique features of CUDA C++.
 
 <!--- standard device memory, standard pageable host memory, unified memory pageable between host and device, and pinned host memory directly accessible from device --->
@@ -35,7 +35,7 @@ We propose extending `<memory_resource>` to provide a common memory allocation i
 
 We chose `<memory_resource>` as the basis for a CUDA-specific allocator interface for several reasons:
 
-- `<memory_resource>` is the direction taken by Standard C++ for custom, stateful allocators. It will ease working between Standard and CUDA C++ for there to be an allocator interface with a common look and feel. For more information on `<memory_resource>` see [here](https://www.youtube.com/watch?v=l14Zkx5OXr4) and [here](https://www.youtube.com/watch?v=l14Zkx5OXr4).
+- `<memory_resource>` is the direction taken by Standard C++ for custom, stateful allocators. An allocator interface with a common look and feel will ease working between Standard and CUDA C++. For more information on `<memory_resource>` see [here](https://www.youtube.com/watch?v=l14Zkx5OXr4) and [here](https://www.youtube.com/watch?v=l14Zkx5OXr4).
 
 - The [RAPIDS Memory Management](https://github.com/rapidsai/rmm) library has had three years of [success](https://developer.nvidia.com/blog/fast-flexible-allocation-for-cuda-with-rapids-memory-manager/) using its `rmm::device_memory_resource` interface based on `std::pmr::memory_resource`. 
 
@@ -62,7 +62,7 @@ enum class memory_kind {
 ### `stream_view`
 
 A strongly typed, non-owning, view-type for `cudaStream_t`. 
-This type provides a more typesafe C++ wrapper around `cudaStream_t` and will serve as the input argument type for any libcu++ API that takes a CUDA stream.
+This type provides a more typesafe C++ wrapper around `cudaStream_t` and serves as the input argument type for any libcu++ API that takes a CUDA stream.
 
 ### `cuda::memory_resource`
 
@@ -121,9 +121,6 @@ private:
 However, there may be situations where one wishes to use a `cuda::memory_resource` derived type as if it were a `std::pmr::memory_resource` derived type.
 The `cuda::pmr_adaptor` class is intended to provide this functionality by inheriting from `std::pmr::memory_resource` and adapting an appropriate `cuda::memory_resource`. 
 
-
-
-
 ### `cuda::stream_ordered_memory_resource`
 
 The `cuda::stream_ordered_memory_resource` class template is the abstract base class interface for _stream-ordered_ memory allocation.
@@ -174,7 +171,6 @@ TBD
 ### Containers
 
 TBD. libcu++ will provide memory owning container types that work with `cuda::memory_resource/cuda::stream_ordered_memory`. 
-
 
 
 
