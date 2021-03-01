@@ -124,7 +124,7 @@ The `cuda::pmr_adaptor` class is intended to provide this functionality by inher
 ### `cuda::stream_ordered_memory_resource`
 
 The `cuda::stream_ordered_memory_resource` class template is the abstract base class interface for _stream-ordered_ memory allocation.
-This is similar to `cuda::memory_resource` but `allocate` and `deallocate` both take a stream argument and follow stream-ordered memory allocation semantics as defined by [`cudaMallocAsync`](https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__MEMORY__POOLS.html). 
+This is similar to `cuda::memory_resource` but `allocate_async` and `deallocate_async` both take a stream argument and follow stream-ordered memory allocation semantics as defined by [`cudaMallocAsync`](https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__MEMORY__POOLS.html). 
 
 ```c++
 template <memory_kind Kind>
@@ -133,13 +133,13 @@ class stream_ordered_memory_resource : public memory_resource<_Kind /* default c
 public:
     static constexpr size_t default_alignment = alignof(max_align_t);
     // Two overloads exist so that callers can still implicitly use the `default_alignment` when passing a stream
-    void* allocate(size_t n, cuda::stream_view s){ return do_allocate(n, default_alignment, s); }
-    void* allocate(size_t n, size_t alignment, cuda::stream_view s){ return do_allocate(n, alignment, s); }
-    void deallocate(void* p, size_t n, cuda::stream_view s){ return do_deallocate(p, n, default_alignment, s); }
-    void deallocate(void* p, size_t n, size_t alignment, cuda::stream_view s){ return do_deallocate(p, n, alignment, s); }
+    void* allocate_async(size_t n, cuda::stream_view s){ return do_allocate_async(n, default_alignment, s); }
+    void* allocate_async(size_t n, size_t alignment, cuda::stream_view s){ return do_allocate_async(n, alignment, s); }
+    void deallocate_async(void* p, size_t n, cuda::stream_view s){ return do_deallocate_async(p, n, default_alignment, s); }
+    void deallocate_async(void* p, size_t n, size_t alignment, cuda::stream_view s){ return do_deallocate_async(p, n, alignment, s); }
  private:
-    virtual void* do_allocate(size_t nk, size_t alignment, cuda::stream_view s) = 0;
-    virtual void do_deallocate(void* p, size_t n, size_t alignment, cuda::stream_view s) = 0;
+    virtual void* do_allocate_async(size_t nk, size_t alignment, cuda::stream_view s) = 0;
+    virtual void do_deallocate_async(void* p, size_t n, size_t alignment, cuda::stream_view s) = 0;
 };
 ```
 
