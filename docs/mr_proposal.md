@@ -160,24 +160,8 @@ Just as `<memory_resource>` provides concrete, derived implementations of `std::
 
 Other resource implementations may be added as deemed appropriate.
 
-### `cuda::polymorphic_allocator`
+## Future Work
 
-TBD
+Future work will include the design of allocators similar to `std::pmr::polymorphic_allocator` to work with `cuda::memory_resource` and `cuda::stream_ordered_memory_resource`. 
 
-### `cuda::stream_ordered_allocator`
-
-TBD
-
-### Containers
-
-TBD. libcu++ will provide memory owning container types that work with `cuda::memory_resource/cuda::stream_ordered_memory`. 
-
-
-
-
-
-
-
-
-
-
+Likewise, containers that work with `cuda::memory_resource` and `cuda::stream_ordered_memory_resource` will be future work. 
