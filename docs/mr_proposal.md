@@ -155,7 +155,7 @@ Just as `<memory_resource>` provides concrete, derived implementations of `std::
    - Uses `cudaMallocManaged/cudaFree` for unified memory
 - `cuda::pinned_resource : public cuda::memory_resource<memory_kind::pinned>`
    - Uses `cudaMallocHost/cudaFreeHost` for page-locked host memory
-- `cuda::cuda_async_resource : public cuda::stream_oredered_memory_resource<memory_kind::device>`
+- `cuda::cuda_async_resource : public cuda::stream_ordered_memory_resource<memory_kind::device>`
    - Uses `cudaMallocAsync/cudaFreeAsync` for device memory
 
 Other resource implementations may be added as deemed appropriate.
