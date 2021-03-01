@@ -149,13 +149,13 @@ Just as `<memory_resource>` provides concrete, derived implementations of `std::
 
 - `cuda::new_delete_resource : public cuda::memory_resource<memory_kind::host>`
    - Uses `::operator new()`/`::operator delete()` for allocating host memory
-- `cuda::cuda_resource : public cuda::memory_resource<memory_kind::device>`
+- `cuda::device_resource : public cuda::memory_resource<memory_kind::device>`
    - Uses `cudaMalloc/cudaFree` for allocating device memory
 - `cuda::unified_resource : public cuda::memory_resource<memory_kind::unified>`
    - Uses `cudaMallocManaged/cudaFree` for unified memory
 - `cuda::pinned_resource : public cuda::memory_resource<memory_kind::pinned>`
    - Uses `cudaMallocHost/cudaFreeHost` for page-locked host memory
-- `cuda::cuda_async_resource : public cuda::stream_ordered_memory_resource<memory_kind::device>`
+- `cuda::async_device_resource : public cuda::stream_ordered_memory_resource<memory_kind::device>`
    - Uses `cudaMallocAsync/cudaFreeAsync` for device memory
 
 Other resource implementations may be added as deemed appropriate.
