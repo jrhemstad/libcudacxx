@@ -160,6 +160,14 @@ Just as `<memory_resource>` provides concrete, derived implementations of `std::
 
 Other resource implementations may be added as deemed appropriate.
 
+## `cuda::` Namespace Policy
+
+The current policy of libcu++ is that everything in the `cuda::` namespace must be heterogeneous, i.e., `__host__ __device__`. 
+The facilities described above in `<cuda/memory_resource>` are intended to be host-only at this time. 
+Therefore, we propose to modify the policy to allow host-only constructs in `cuda::`.
+Device-only constructs will still be disallowed in `cuda::`.
+Any device-only construct would go into `cuda::device::`.
+
 ## Future Work
 
 Future work will include the design of allocators similar to `std::pmr::polymorphic_allocator` to work with `cuda::memory_resource` and `cuda::stream_ordered_memory_resource`. 
