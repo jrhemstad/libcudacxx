@@ -25,9 +25,9 @@ Therefore, there is a need for a common allocator interface similar to `std::pmr
 <!--- in response to the proliferation of custom CUDA device memory allocators to provide users with an allocator faster than `cudaMalloc/cudaFree` and reduce the burden of many developers to maintain their own allocator. --->
 
 
-<a name="link-footnote">[1]</a>: Note that `cudaMallocAsync` does not obviate the need for custom, CUDA-aware allocators nor a common allocation interface.
+<a name="link-footnote">[1]</a>: Note that `cudaMallocAsync` obviates neither the need for custom, CUDA-aware allocators, nor the need for a common allocation interface. 
 There will never be one allocator that satisfies all users. 
-Furthermore, a common interface allows composing and layering utilities like logging, leak checking, tracking, etc. 
+Furthermore, a common interface allows composing and layering utilities like logging, limiting, leak checking, and tracking.
 
 ## Description
 
